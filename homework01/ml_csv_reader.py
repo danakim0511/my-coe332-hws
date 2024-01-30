@@ -1,5 +1,6 @@
-import json
+import csv
 import math
+from pprint import pprint
 
 # Function to compute the average mass from a list of dictionaries
 def compute_average_mass(a_list_of_dicts, a_key_string):
@@ -47,12 +48,13 @@ def compute_geographical_std_deviation(a_list_of_dicts):
     # Compute the square root of the average squared deviations
     return math.sqrt(deviation_sum / len(latitudes))
 
-# Open the JSON file containing meteorite data
-with open('Meteorite_Landings.json', 'r') as f:
-    ml_data = json.load(f)
+# Open the CSV file containing meteorite data
+with open('Meteorite_Landings.csv', 'r', newline='', encoding='utf-8') as csvfile:
+    # Use csv.DictReader to read the CSV file into a list of dictionaries
+    ml_data = list(csv.DictReader(csvfile))
 
 # Compute average mass
-average_mass = compute_average_mass(ml_data['meteorite_landings'], 'mass (g)')
+average_mass = compute_average_mass(ml_data, 'mass (g)')
 
 # Check hemisphere and location statistics
 hemisphere_statistics = {
@@ -65,19 +67,19 @@ hemisphere_statistics = {
 }
 
 # Geolocation range
-geolocation_range = compute_geolocation_range(ml_data['meteorite_landings'])
+geolocation_range = compute_geolocation_range(ml_data)
 
 # Geographical standard deviation
-geographical_std_deviation = compute_geographical_std_deviation(ml_data['meteorite_landings'])
+geographical_std_deviation = compute_geographical_std_deviation(ml_data)
 
 # Iterate through each meteorite record
-for row in ml_data['meteorite_landings']:
+for row in ml_data:
     latitude, longitude = float(row['reclat']), float(row['reclong'])
     location = check_hemisphere(latitude, longitude)
     hemisphere_statistics[location] += 1
 
 # Count occurrences of recclass
-recclass_occurrences = count_occurrences(ml_data['meteorite_landings'], 'recclass')
+recclass_occurrences = count_occurrences(ml_data, 'recclass')
 
 # Combine all results into a summary dictionary
 summary_statistics = {
@@ -88,5 +90,5 @@ summary_statistics = {
     'recclass_occurrences': recclass_occurrences
 }
 
-# Output summary statistics in JSON format
-print(json.dumps(summary_statistics, indent=2))
+# Output summary statistics in a readable format using pprint
+pprint(summary_statistics)
