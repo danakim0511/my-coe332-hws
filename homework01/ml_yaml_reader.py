@@ -1,5 +1,6 @@
 import yaml
 import math
+import argparse
 from pprint import pprint
 
 def compute_average_mass(a_list_of_dicts):
@@ -60,30 +61,43 @@ def count_recclass_occurrences(a_list_of_dicts):
 
     return results
 
-# Open the YAML file containing meteorite data
-with open('Meteorite_Landings.yaml', 'r', encoding='utf-8') as yamlfile:
-    # Use yaml.safe_load to load the YAML file into a list of dictionaries
-    ml_data = yaml.safe_load(yamlfile)
+# Main function to execute the script
+def main():
+    # Setup argparse to handle command-line arguments
+    parser = argparse.ArgumentParser(description='Compute summary statistics for meteorite data.')
+    parser.add_argument('input_file', help='Path to the YAML file containing meteorite data.')
 
-# Compute average mass
-average_mass = compute_average_mass(ml_data['meteorite_landings'])
+    # Parse command-line arguments
+    args = parser.parse_args()
 
-# Print average mass
-print(f"Average Mass: {average_mass:.2f}")
+    # Open the YAML file containing meteorite data
+    with open(args.input_file, 'r', encoding='utf-8') as yamlfile:
+        # Use yaml.safe_load to load the YAML file into a list of dictionaries
+        ml_data = yaml.safe_load(yamlfile)
 
-# Print geolocation range
-geolocation_range = compute_geolocation_range(ml_data['meteorite_landings'])
-print("Geolocation Range:")
-pprint(geolocation_range)
+    # Compute average mass
+    average_mass = compute_average_mass(ml_data['meteorite_landings'])
 
-# Print geographical standard deviation
-geographical_std_deviation = compute_geographical_std_deviation(ml_data['meteorite_landings'])
-print(f"Geographical Standard Deviation: {geographical_std_deviation:.2f}")
+    # Print average mass
+    print(f"Average Mass: {average_mass:.2f}")
 
-# Count occurrences of 'recclass'
-recclass_occurrences = count_recclass_occurrences(ml_data['meteorite_landings'])
+    # Print geolocation range
+    geolocation_range = compute_geolocation_range(ml_data['meteorite_landings'])
+    print("Geolocation Range:")
+    pprint(geolocation_range)
 
-# Print summary statistics of 'recclass' occurrences
-print("Recclass Occurrences:")
-for recclass, count in recclass_occurrences.items():
-    print(f'{recclass} , {count}')
+    # Print geographical standard deviation
+    geographical_std_deviation = compute_geographical_std_deviation(ml_data['meteorite_landings'])
+    print(f"Geographical Standard Deviation: {geographical_std_deviation:.2f}")
+
+    # Count occurrences of 'recclass'
+    recclass_occurrences = count_recclass_occurrences(ml_data['meteorite_landings'])
+
+    # Print summary statistics of 'recclass' occurrences
+    print("Recclass Occurrences:")
+    for recclass, count in recclass_occurrences.items():
+        print(f'{recclass} , {count}')
+
+# Check if the script is being run as the main module
+if __name__ == "__main__":
+    main()

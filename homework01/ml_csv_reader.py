@@ -1,5 +1,6 @@
 import csv
 import math
+import argparse
 from pprint import pprint
 
 # Function to compute the average mass from a list of dictionaries
@@ -48,47 +49,60 @@ def compute_geographical_std_deviation(a_list_of_dicts):
     # Compute the square root of the average squared deviations
     return math.sqrt(deviation_sum / len(latitudes))
 
-# Open the CSV file containing meteorite data
-with open('Meteorite_Landings.csv', 'r', newline='', encoding='utf-8') as csvfile:
-    # Use csv.DictReader to read the CSV file into a list of dictionaries
-    ml_data = list(csv.DictReader(csvfile))
+# Main function to execute the script
+def main():
+    # Setup argparse to handle command-line arguments
+    parser = argparse.ArgumentParser(description='Compute summary statistics for meteorite data from a CSV file.')
+    parser.add_argument('input_file', help='Path to the CSV file containing meteorite data.')
 
-# Compute average mass
-average_mass = compute_average_mass(ml_data, 'mass (g)')
+    # Parse command-line arguments
+    args = parser.parse_args()
 
-# Check hemisphere and location statistics
-hemisphere_statistics = {
-    'Northern': 0,
-    'Southern': 0,
-    'Northern & Eastern': 0,
-    'Southern & Eastern': 0,
-    'Northern & Western': 0,
-    'Southern & Western': 0
-}
+    # Open the CSV file containing meteorite data
+    with open(args.input_file, 'r', newline='', encoding='utf-8') as csvfile:
+        # Use csv.DictReader to read the CSV file into a list of dictionaries
+        ml_data = list(csv.DictReader(csvfile))
 
-# Geolocation range
-geolocation_range = compute_geolocation_range(ml_data)
+    # Compute average mass
+    average_mass = compute_average_mass(ml_data, 'mass (g)')
 
-# Geographical standard deviation
-geographical_std_deviation = compute_geographical_std_deviation(ml_data)
+    # Check hemisphere and location statistics
+    hemisphere_statistics = {
+        'Northern': 0,
+        'Southern': 0,
+        'Northern & Eastern': 0,
+        'Southern & Eastern': 0,
+        'Northern & Western': 0,
+        'Southern & Western': 0
+    }
 
-# Iterate through each meteorite record
-for row in ml_data:
-    latitude, longitude = float(row['reclat']), float(row['reclong'])
-    location = check_hemisphere(latitude, longitude)
-    hemisphere_statistics[location] += 1
+    # Geolocation range
+    geolocation_range = compute_geolocation_range(ml_data)
 
-# Count occurrences of recclass
-recclass_occurrences = count_occurrences(ml_data, 'recclass')
+    # Geographical standard deviation
+    geographical_std_deviation = compute_geographical_std_deviation(ml_data)
 
-# Combine all results into a summary dictionary
-summary_statistics = {
-    'average_mass': average_mass,
-    'hemisphere_statistics': hemisphere_statistics,
-    'geolocation_range': geolocation_range,
-    'geographical_std_deviation': geographical_std_deviation,
-    'recclass_occurrences': recclass_occurrences
-}
+    # Iterate through each meteorite record
+    for row in ml_data:
+        latitude, longitude = float(row['reclat']), float(row['reclong'])
+        location = check_hemisphere(latitude, longitude)
+        hemisphere_statistics[location] += 1
 
-# Output summary statistics in a readable format using pprint
-pprint(summary_statistics)
+    # Count occurrences of recclass
+    recclass_occurrences = count_occurrences(ml_data, 'recclass')
+
+    # Combine all results into a summary dictionary
+    summary_statistics = {
+        'average_mass': average_mass,
+        'hemisphere_statistics': hemisphere_statistics,
+        'geolocation_range': geolocation_range,
+        'geographical_std_deviation': geographical_std_deviation,
+        'recclass_occurrences': recclass_occurrences
+    }
+
+    # Output summary statistics in a readable format using pprint
+    pprint(summary_statistics)
+
+# Check if the script is being run as the main module
+if __name__ == "__main__":
+    main()
