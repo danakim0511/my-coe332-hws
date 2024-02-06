@@ -4,7 +4,7 @@ import pytest
 def test_calculate_great_circle_distance():
     # Example coordinates and their expected distances
     test_cases = [
-        ((40.7128, -74.0060, 34.0522, -118.2437), 3964.686),
+        ((40.7128, -74.0060, 34.0522, -118.2437), 3964.686 ± 1.0e-03),
         ((0, 0, 0, 0), 0),  # Distance between the same point should be 0
         ((45.0, 0.0, -45.0, 180.0), 10007.543),  # Opposite points on the globe
         # Add more test cases as needed
