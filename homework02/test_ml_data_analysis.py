@@ -1,9 +1,4 @@
-from ml_data_analysis import (
-    calculate_max_mass,
-    calculate_min_mass,
-    calculate_avg_latitude_longitude,
-    calculate_distance_between_sites,
-)
+from ml_data_analysis import calculate_max_mass, calculate_min_mass, calculate_avg_latitude_longitude, calculate_distance_between_sites
 
 import pytest
 
