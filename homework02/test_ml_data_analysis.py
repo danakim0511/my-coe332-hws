@@ -31,4 +31,4 @@ def test_calculate_avg_latitude_longitude_empty():
 def test_calculate_distance_between_sites():
     site1 = {'reclat': '10', 'reclong': '20'}
     site2 = {'reclat': '30', 'reclong': '40'}
-    assert calculate_distance_between_sites(site1, site2) == pytest.approx(2225.885)
+    assert calculate_distance_between_sites(site1, site2) == pytest.approx(3040.6028180682, abs=1e-3)
