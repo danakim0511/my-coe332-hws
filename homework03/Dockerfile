@@ -15,10 +15,14 @@ RUN dpkg-reconfigure --frontend noninteractive tzdata
 RUN pip3 install pytest==8.0.0
 
 WORKDIR /code
+
 COPY ml_data_analysis.py /code/ml_data_analysis.py
 COPY great_circle_distance.py /code/great_circle_distance.py
+
+COPY test_gcd_algorithms.py /code/tests/test_gcd_algorithms.py
+COPY test_ml_data_analysis.py /code/tests/test_ml_data_analysis.py
 
 RUN chmod +x /code/ml_data_analysis.py
 ENV PATH=/code:$PATH
 
-CMD ["python3", "/code/ml_data_analysis.py", "/data/Meteorite_Landings.json"]
+CMD ["python3", "-m", "pytest"]
