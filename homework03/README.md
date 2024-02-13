@@ -54,3 +54,6 @@ To run the primary script successfully, download the Meteorite Landings dataset 
 ## Results Interpretation
 The script prints various summary statistics, including maximum and minimum mass, average latitude and longitude, and hemisphere distribution.
 The scatter plot visually represents the distribution of meteorite landing sites.
+
+## System Overview Diagram
+The system consists of several components, including Python scripts, Docker, and external data sources. Users interact with the system by cloning the repository and building the Docker image, which encapsulates the scripts and dependencies. At runtime, the container mounts external data, runs the analysis, and produces results. The unit tests ensure the accuracy of functions. This diagram provides a visual representation of how each component connects and works together within the system.
