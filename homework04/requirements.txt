@@ -1,4 +1,3 @@
 requests
 python-dateutil
-xmltodict==0.12.0
-
+xmltodict
