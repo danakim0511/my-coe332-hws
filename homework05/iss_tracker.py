@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 import xml.etree.ElementTree as ET
 import xmltodict
 import logging
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from typing import Union
 
 app = Flask(__name__)
@@ -63,6 +63,15 @@ def calculate_average_speed(iss_data: List[Dict[str, str]]) -> float:
         return total_speed / len(iss_data)
     except ZeroDivisionError:
         return 0.0
+
+def calculate_instantaneous_speed(data_point: Dict[str, Union[str, float]]) -> float:
+    """Calculate instantaneous speed for a specific data point."""
+    speed = (
+        float(data_point["X_DOT"])**2 +
+        float(data_point["Y_DOT"])**2 +
+        float(data_point["Z_DOT"])**2
+    )**0.5
+    return speed
 
 def find_closest_data_point(iss_data: List[Dict[str, str]]) -> Dict[str, str]:
     """Find the closest data point to the current time.
@@ -132,23 +141,27 @@ def get_entire_data_set():
         logging.error(f"Error: {e}")
         return jsonify({"error": f"An error occurred: {e}"}), 500
 
-# Route to get modified list of Epochs given query parameters
 @app.route('/epochs', methods=['GET'])
 def get_modified_epochs_list():
     try:
-        limit = int(request.args.get('limit', default=10))  # default limit is 10
-        offset = int(request.args.get('offset', default=0))  # default offset is 0
+        # Get limit and offset from query parameters
+        limit = int(request.args.get('limit', default=10))  # default limit is 10   
+        offset = int(request.args.get('offset', default=0))  # default offset is 0  
 
         response = requests.get(url='https://nasa-public-data.s3.amazonaws.com/iss-coords/current/ISS_OEM/ISS.OEM_J2K_EPH.xml')
         if response.status_code == 200:
             data_dict = xmltodict.parse(response.content)
             iss_data = parse_iss_data(data_dict)
 
+            # Apply pagination using limit and offset
             modified_data = iss_data[offset:offset + limit]
+
             return jsonify(modified_data)
         else:
             return jsonify({"error": f"Failed to fetch ISS data. Status code: {response.status_code}"}), 500
 
+    except ValueError as ve:
+        return jsonify({"error": f"Invalid value for limit or offset: {ve}"}), 400
     except Exception as e:
         logging.error(f"Error: {e}")
         return jsonify({"error": f"An error occurred: {e}"}), 500
