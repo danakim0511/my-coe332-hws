@@ -8,11 +8,10 @@ import logging
 from flask import Flask, jsonify
 from typing import Union
 
-# Configure logging
-logging.basicConfig(filename='iss_tracker.log', level=logging.ERROR)
-
 app = Flask(__name__)
 
+# Configure logging
+logging.basicConfig(filename='iss_tracker.log', level=logging.ERROR)
 
 def parse_iss_data(xml_data: dict) -> List[Dict[str, Any]]:
     """Parse the ISS data and store it in a list of dictionaries format.
@@ -91,7 +90,34 @@ def print_data_range(iss_data: List[Dict[str, str]]):
         start_epoch = iss_data[0]["EPOCH"]
         end_epoch = iss_data[-1]["EPOCH"]
         print(f"Data range from {start_epoch} to {end_epoch}")
+        
+# Route to return the entire data set
+@app.route('/epochs', methods=['GET'])
+def get_epochs():
+    try:
+        # Make a GET request to the ISS data URL
+        response = requests.get(url='https://nasa-public-data.s3.amazonaws.com/iss-coords/current/ISS_OEM/ISS.OEM_J2K_EPH.xml')
 
+        # Check if the request was successful (status code 200)
+        if response.status_code == 200:
+            # Parse the XML content using xmltodict and convert to dictionary
+            data_dict = xmltodict.parse(response.content)
+
+            # Extract state vector information from the parsed data
+            iss_data = parse_iss_data(data_dict)
+
+            # Return the entire data set as JSON
+            return jsonify(iss_data)
+
+        else:
+            # Return an error message if the request fails
+            return jsonify({"error": f"Failed to fetch ISS data. Status code: {response.status_code}"}), 500
+
+    except Exception as e:
+        # Log any errors
+        logging.error(f"Error: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+    
 def get_entire_data_set():
     try:
         response = requests.get(url='https://nasa-public-data.s3.amazonaws.com/iss-coords/current/ISS_OEM/ISS.OEM_J2K_EPH.xml')
