@@ -38,7 +38,7 @@ Example:
 ```bash
 curl http://127.0.0.1:5000/epochs/2024-05-02T12:16:00.000Z
 ```
-### /epochs/<epoch>/speed
+### /epochs/'<'epoch'>'/speed
 Returns instantaneous speed for a specific epoch
 Example:
 ```bash
@@ -50,9 +50,3 @@ Example:
 ```bash
 curl http://127.0.0.1:5000/now
 ```
-
-## Output Descriptions
-/epochs: Returns a JSON array of state vectors.
-/epochs/<epoch>: Returns a JSON array with state vectors for the specified epoch.
-/epochs/<epoch>/speed: Returns JSON with the instantaneous speed for the specified epoch.
-/now: Returns JSON with state vectors and instantaneous speed for the epoch nearest in time.
