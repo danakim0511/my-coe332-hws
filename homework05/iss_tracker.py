@@ -5,9 +5,14 @@ from datetime import datetime, timezone
 import xml.etree.ElementTree as ET
 import xmltodict
 import logging
+from flask import Flask, jsonify
+from typing import Union
 
 # Configure logging
 logging.basicConfig(filename='iss_tracker.log', level=logging.ERROR)
+
+app = Flask(__name__)
+
 
 def parse_iss_data(xml_data: dict) -> List[Dict[str, Any]]:
     """Parse the ISS data and store it in a list of dictionaries format.
@@ -87,44 +92,111 @@ def print_data_range(iss_data: List[Dict[str, str]]):
         end_epoch = iss_data[-1]["EPOCH"]
         print(f"Data range from {start_epoch} to {end_epoch}")
 
-def main():
+def get_entire_data_set():
     try:
-        # Make a GET request to the ISS data URL
         response = requests.get(url='https://nasa-public-data.s3.amazonaws.com/iss-coords/current/ISS_OEM/ISS.OEM_J2K_EPH.xml')
-
-        # Check if the request was successful (status code 200)
         if response.status_code == 200:
-            # Parse the XML content using xmltodict and convert to dictionary
             data_dict = xmltodict.parse(response.content)
-
-            # Extract state vector information from the parsed data
             iss_data = parse_iss_data(data_dict)
-
-            # Print the data range
-            print_data_range(iss_data)
-
-            # Find the closest data point to 'now'
-            closest_data_point = find_closest_data_point(iss_data)
-            print(f"\nClosest data point to 'now': {closest_data_point}")
-
-            # Calculate and print average speed
-            avg_speed = calculate_average_speed(iss_data)
-            print(f"\nAverage speed over the whole data set: {avg_speed} km/s")
-
-            # Calculate and print instantaneous speed closest to 'now'
-            instant_speed = (
-                float(closest_data_point["X_DOT"])**2 +
-                float(closest_data_point["Y_DOT"])**2 +
-                float(closest_data_point["Z_DOT"])**2
-            )**0.5
-            print(f"Instantaneous speed closest to 'now': {instant_speed} km/s")
-
+            return jsonify(iss_data)
         else:
-            print(f"Failed to fetch ISS data. Status code: {response.status_code}")
+            return jsonify({"error": f"Failed to fetch ISS data. Status code: {response.status_code}"}), 500
 
     except Exception as e:
         logging.error(f"Error: {e}")
+        return jsonify({"error": f"An error occurred: {e}"}), 500
 
-if __name__ == "__main__":
-    main()
+# Route to get modified list of Epochs given query parameters
+@app.route('/epochs', methods=['GET'])
+def get_modified_epochs_list():
+    try:
+        limit = int(request.args.get('limit', default=10))  # default limit is 10
+        offset = int(request.args.get('offset', default=0))  # default offset is 0
 
+        response = requests.get(url='https://nasa-public-data.s3.amazonaws.com/iss-coords/current/ISS_OEM/ISS.OEM_J2K_EPH.xml')
+        if response.status_code == 200:
+            data_dict = xmltodict.parse(response.content)
+            iss_data = parse_iss_data(data_dict)
+
+            modified_data = iss_data[offset:offset + limit]
+            return jsonify(modified_data)
+        else:
+            return jsonify({"error": f"Failed to fetch ISS data. Status code: {response.status_code}"}), 500
+
+    except Exception as e:
+        logging.error(f"Error: {e}")
+        return jsonify({"error": f"An error occurred: {e}"}), 500
+
+# Route to get state vectors for a specific Epoch from the data set
+@app.route('/epochs/<epoch>', methods=['GET'])
+def get_state_vectors_for_epoch(epoch: str):
+    try:
+        response = requests.get(url='https://nasa-public-data.s3.amazonaws.com/iss-coords/current/ISS_OEM/ISS.OEM_J2K_EPH.xml')
+        if response.status_code == 200:
+            data_dict = xmltodict.parse(response.content)
+            iss_data = parse_iss_data(data_dict)
+
+            # Find data for the specified epoch
+            epoch_data = [data_point for data_point in iss_data if data_point["EPOCH"] == epoch]
+            
+            if epoch_data:
+                return jsonify(epoch_data)
+            else:
+                return jsonify({"error": f"No data found for the specified epoch: {epoch}"}), 404
+        else:
+            return jsonify({"error": f"Failed to fetch ISS data. Status code: {response.status_code}"}), 500
+
+    except Exception as e:
+        logging.error(f"Error: {e}")
+        return jsonify({"error": f"An error occurred: {e}"}), 500
+
+# Route to get instantaneous speed for a specific Epoch in the data set
+@app.route('/epochs/<epoch>/speed', methods=['GET'])
+def get_instantaneous_speed_for_epoch(epoch: str):
+    try:
+        response = requests.get(url='https://nasa-public-data.s3.amazonaws.com/iss-coords/current/ISS_OEM/ISS.OEM_J2K_EPH.xml')
+        if response.status_code == 200:
+            data_dict = xmltodict.parse(response.content)
+            iss_data = parse_iss_data(data_dict)
+
+            # Find data for the specified epoch
+            epoch_data = [data_point for data_point in iss_data if data_point["EPOCH"] == epoch]
+
+            if epoch_data:
+                # Calculate instantaneous speed for the specified epoch
+                speed = calculate_instantaneous_speed(epoch_data[0])
+                return jsonify({"instantaneous_speed": speed})
+            else:
+                return jsonify({"error": f"No data found for the specified epoch: {epoch}"}), 404
+        else:
+            return jsonify({"error": f"Failed to fetch ISS data. Status code: {response.status_code}"}), 500
+
+    except Exception as e:
+        logging.error(f"Error: {e}")
+        return jsonify({"error": f"An error occurred: {e}"}), 500
+
+# Route to get state vectors and instantaneous speed for the Epoch that is nearest in time
+@app.route('/now', methods=['GET'])
+def get_data_for_nearest_epoch():
+    try:
+        response = requests.get(url='https://nasa-public-data.s3.amazonaws.com/iss-coords/current/ISS_OEM/ISS.OEM_J2K_EPH.xml')
+        if response.status_code == 200:
+            data_dict = xmltodict.parse(response.content)
+            iss_data = parse_iss_data(data_dict)
+
+            # Find the closest data point to 'now'
+            closest_data_point = find_closest_data_point(iss_data)
+
+            # Calculate and include instantaneous speed closest to 'now'
+            closest_data_point["instantaneous_speed"] = calculate_instantaneous_speed(closest_data_point)
+
+            return jsonify(closest_data_point)
+        else:
+            return jsonify({"error": f"Failed to fetch ISS data. Status code: {response.status_code}"}), 500
+
+    except Exception as e:
+        logging.error(f"Error: {e}")
+        return jsonify({"error": f"An error occurred: {e}"}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
