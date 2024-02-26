@@ -8,11 +8,10 @@ import logging
 from flask import Flask, jsonify
 from typing import Union
 
-# Configure logging
-logging.basicConfig(filename='iss_tracker.log', level=logging.ERROR)
-
 app = Flask(__name__)
 
+# Configure logging
+logging.basicConfig(filename='iss_tracker.log', level=logging.ERROR)
 
 def parse_iss_data(xml_data: dict) -> List[Dict[str, Any]]:
     """Parse the ISS data and store it in a list of dictionaries format.
