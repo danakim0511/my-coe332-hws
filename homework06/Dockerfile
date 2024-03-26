@@ -1,4 +1,4 @@
-# Use a Python base image
+# Use the official Python image as base
 FROM python:3.9
 
 # Set environment variables
@@ -9,14 +9,13 @@ ENV FLASK_RUN_PORT=5000
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the requirements file and install dependencies
-COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+# Install Flask and other dependencies
+RUN pip install Flask==2.0.1
 
-# Copy the Flask application code into the container
+# Copy the current directory contents into the container at /app
 COPY . .
 
-# Expose the Flask app port
+# Expose port 5000 to the outside world
 EXPOSE 5000
 
 # Command to run the Flask application
