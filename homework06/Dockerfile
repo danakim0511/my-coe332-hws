@@ -2,7 +2,7 @@
 FROM python:3.9
 
 # Set environment variables
-ENV FLASK_APP=your_flask_app.py
+ENV FLASK_APP=gene_api.py
 ENV FLASK_RUN_HOST=0.0.0.0
 ENV FLASK_RUN_PORT=5000
 
