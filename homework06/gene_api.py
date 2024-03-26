@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 import requests
 import redis
 import csv
+import json
 
 app = Flask(__name__)
 redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
