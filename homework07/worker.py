@@ -60,7 +60,7 @@ def execute_job(item: str) -> dict:
         result = 'The data does not exist, make sure to POST the data!'
         status = 'incompleted'
     else:
-        if function == 'get_rockets_by_org' and len(args) == 2:
+        if function == 'get_sites_by_state' and len(args) == 2:
             result = get_sites_by_state(full_data, args[1])
         else: 
             status = 'incompleted' # changes to incompleted if the route doesn't exist
