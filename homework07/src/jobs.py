@@ -14,24 +14,25 @@ rd2 = Redis(host = redis_ip, port=6379, db=2)
 
 def get_sites_data() -> dict:
     '''
-        This function pulls the full data csv from the current directory and formats
-        it into json format for use in most other functions.
+    This function pulls the full data csv from the data directory
+    and formats it into json format for use in most other functions.
 
-        Args:
-            None
-        Returns:
-            data (dict) : A dictionary containing the key 'sites' that contains
-            a list of dictionaries of each site
+    Returns:
+        data (dict) : A dictionary containing the key 'sites' that contains
+        a list of dictionaries of each site
     '''
     data = {}
     data['sites'] = []
 
-    with open('SITE_HCC_FCT_DET.csv', 'r') as f:
+    # Construct the path to the CSV file
+    csv_file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'SITE_HCC_FCT_DET.csv')
+
+    with open(csv_file_path, 'r') as f:
         reader = csv.DictReader(f)
         for row in reader:
             data['sites'].append(dict(row))
 
-    return(data)
+    return data
 
 # JOB HANDLING
 
