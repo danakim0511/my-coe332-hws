@@ -15,7 +15,7 @@ rd2 = Redis(host=redis_ip, port=6379, db=2)
 
 app = Flask(__name__)
 
-@app.route('/data', methods=['DELETE'])
+@app.route('/data'cat , methods=['DELETE'])
 def delete_data() -> str:
     """
     This function deletes the data completely.

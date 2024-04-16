@@ -34,7 +34,7 @@ def execute_job(item: str) -> dict:
     current_job = json.loads(rd.get(current_jid))
     
     # PASS THE ROUTE INTO USABLE VARIABLES
-    current_route = current_job['route'] # full route, e.g., '/get_rockets_by_org-org'
+    current_route = current_job['route'] # full route,
 
     # INITIALIZING ARGS
     args = []
@@ -42,7 +42,7 @@ def execute_job(item: str) -> dict:
     # THIS CHECKS TO MAKE SURE IF IT HAS ANOTHER ELEMENT TO THE QUERY
     if '-' in current_route:
         args = current_route.split('-') 
-        function = args[0] # the 'get_rockets_by_org'
+        function = args[0] # the 'get_sites_by_states'
         
         # AS SPACES AREN'T ALLOWED IN THE TERMINAL, THIS IS A WORKAROUND FOR IT
         args[1] = args[1].replace('_', ' ')
@@ -60,7 +60,7 @@ def execute_job(item: str) -> dict:
         result = 'The data does not exist, make sure to POST the data!'
         status = 'incompleted'
     else:
-        if function == 'get_rockets_by_org' and len(args) == 2:
+        if function == 'get_sites_by_state' and len(args) == 2:
             result = get_sites_by_state(full_data, args[1])
         else: 
             status = 'incompleted' # changes to incompleted if the route doesn't exist

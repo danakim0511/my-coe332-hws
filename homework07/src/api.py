@@ -40,7 +40,7 @@ def post_data() -> str:
         message (str): Message saying that the data was successfully reloaded.
     """
 
-    data = j.get_launches_data()
+    data = j.get_sites_data()
 
     #stores the data into the redis client, but as a serialized dictionary string
     rd2.set('data', json.dumps(data))
