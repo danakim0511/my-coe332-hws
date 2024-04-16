@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, jsonify
 import requests, json
 import os
 import jobs as j 
@@ -63,12 +63,12 @@ def post_job(route: str) -> dict:
 
 @app.route('/jobs/<string:jid>', methods=['GET'])
 def get_job(jid: str) -> dict:
-    try:
-        results = rd2.get(jid)
-        return results
+    results = rd2.get(jid)
+    if results is None:
+        return jsonify({'error': 'The job ID is invalid, please try again.'}), 404
+    else:
+        return jsonify(results)
 
-    except TypeError:
-        return 'The job ID is invalid, please try again.\n'
         
 
 @app.route('/jobs/clear', methods=['DELETE'])
