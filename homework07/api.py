@@ -1,5 +1,4 @@
 from flask import Flask, request, send_file
-from werkzeug.urls import url_parse
 import requests, json
 import os
 import jobs as j 
