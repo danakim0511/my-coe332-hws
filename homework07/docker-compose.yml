@@ -1,16 +1,14 @@
-version: '3.8'
+version: '3'
 
 services:
   flask-app:
     build: .
     ports:
       - "5000:5000"
-    environment:
-      - REDIS_IP=redis
+    volumes:
+      - ./data:/app/data  
     depends_on:
       - redis
-    volumes:
-      - ./src:/app/src
 
   redis:
     image: redis:7

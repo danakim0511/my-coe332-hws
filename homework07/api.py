@@ -6,13 +6,13 @@ import jobs as j
 from redis import Redis
 from hotqueue import HotQueue
 
-redis_ip = os.environ.get('REDIS_IP')
-if not redis_ip:
-    raise Exception()
+# Set the Redis hostname or IP address
+redis_ip = "redis"  # Use the service name as the hostname
 
-rd = Redis(host = redis_ip, port=6379, db=0)
-q = HotQueue('queue', host = redis_ip, port = 6379, db=1)
-rd2 = Redis(host = redis_ip, port=6379, db=2)
+# Establish connection to Redis
+rd = Redis(host=redis_ip, port=6379, db=0)
+q = HotQueue('queue', host=redis_ip, port=6379, db=1)
+rd2 = Redis(host=redis_ip, port=6379, db=2)
 
 app = Flask(__name__)
 
