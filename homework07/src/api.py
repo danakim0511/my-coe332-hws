@@ -61,15 +61,19 @@ def post_job(route: str) -> dict:
     jid = j.add_job(route)
     return f'Successfully queued a job! \nTo view the status of the job, curl /jobs.\nHere is the job ID: {jid}\n'
 
+from flask import jsonify
+
 @app.route('/jobs/<string:jid>', methods=['GET'])
 def get_job(jid: str) -> dict:
     results = rd2.get(jid)
     if results is None:
         return jsonify({'error': 'The job ID is invalid, please try again.'}), 404
     else:
-        return jsonify(results)
-
-        
+        try:
+            json_results = json.loads(results)
+            return jsonify(json_results)
+        except json.JSONDecodeError as e:
+            return jsonify({'error': 'Failed to decode job results: {}'.format(str(e))}), 500
 
 @app.route('/jobs/clear', methods=['DELETE'])
 def clear_jobs() -> str:
