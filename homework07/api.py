@@ -12,7 +12,7 @@ redis_ip = "redis"  # Use the service name as the hostname
 rd = Redis(host=redis_ip, port=6379, db=0)
 q = HotQueue('queue', host=redis_ip, port=6379, db=1)
 rd2 = Redis(host=redis_ip, port=6379, db=2)
-
+g
 app = Flask(__name__)
 
 @app.route('/data'cat , methods=['DELETE'])
