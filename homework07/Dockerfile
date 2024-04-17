@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src /app/src
 
 # Set environment variable for Redis IP address
-ENV REDIS_IP=your_redis_ip_address
+ENV REDIS_IP=127.0.0.1
 
 # Expose port 5000 (or the port your Flask app is running on)
 EXPOSE 5000
