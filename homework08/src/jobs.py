@@ -1,170 +1,102 @@
-import csv, folium, uuid, os, json
-from hotqueue import HotQueue
-from collections import Counter
+# jobs.py
+import xml.etree.ElementTree as ET
+import os
+import json
+
 from redis import Redis
-import io
 
 redis_ip = os.environ.get('REDIS_IP')
 if not redis_ip:
     raise Exception()
 
-rd = Redis(host = redis_ip, port=6379, db=0)
-q = HotQueue('queue', host = redis_ip, port = 6379, db=1)
-rd2 = Redis(host = redis_ip, port=6379, db=2)
+rd = Redis(host=redis_ip, port=6379, db=0)
+rd2 = Redis(host=redis_ip, port=6379, db=2)
 
-def get_sites_data() -> dict:
-    '''
-    This function pulls the full data csv from the data directory
-    and formats it into json format for use in most other functions.
+def parse_xml_data(xml_file: str) -> dict:
+    """
+    Parse the healthcare center data from the given XML file.
+
+    Args:
+        xml_file (str): The path to the XML file.
 
     Returns:
-        data (dict) : A dictionary containing the key 'sites' that contains
-        a list of dictionaries of each site
-    '''
-    data = {}
-    data['sites'] = []
+        data (dict): The parsed healthcare center data.
+    """
+    data = {'sites': []}
 
-    # Construct the path to the CSV file
-    csv_file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'SITE_HCC_FCT_DET.csv')
+    try:
+        tree = ET.parse(xml_file)
+        root = tree.getroot()
 
-    with open(csv_file_path, 'r') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            data['sites'].append(dict(row))
+        for site in root.findall('.//row'):  # Assuming each site is represented as a 'row' element
+            site_data = {}
+            for field in site.findall('*'):
+                site_data[field.tag] = field.text
+            data['sites'].append(site_data)
+    except Exception as e:
+        print(f"Error parsing XML data: {e}")
 
     return data
 
-# JOB HANDLING
+def get_data(xml_file: str = 'SITE_HCC_FCT_DET.xml') -> dict:
+    """
+    Retrieve the healthcare center data from the XML file and return as a dictionary.
 
-def generate_jid() -> str:
-    """
-      Generate a pseudo-random identifier for a job and returns it.
-      
-      Returns:
-          randomID (str): A random job ID.
-    """
-    
-    randomID = str(uuid.uuid4())
-    return randomID
-
-def generate_job_key(jid):
-    """
-      Generate the redis key from the job id to be used when storing, retrieving or updating
-      a job in the database.
-      
-      Returns:
-          jid (str): The jobID to be used for the redis key.
-    """
-    return '{}'.format(jid)
-
-def instantiate_job(jid, route, status):
-    """
-      Create the job object description as a python dictionary. Requires the job id, route, and status.
-      
-      Return:
-          (dict): The job object description.
-    """
-    return {'id': jid,
-            'route': route,
-            'status': status
-    }
-
-def save_job(job_key, job_dict):
-    """
-    Save a job object in the rd Redis database.
-    """
-    rd.set(job_key, json.dumps(job_dict))
-
-def queue_job(jid):
-    """
-    Adds a job id to the redis queue.
-    """
-    q.put(jid)
-
-def add_job(route):
-    """
-    Fully creates the job ID and information regarding the job. Then it
-    makes the status into submitted, and saves and queues the job. It returns the
-    job ID so that it can be sent to the user during the success message.
-    
-    Returns:
-        jid (str): The job ID.
-    """
-    jid = generate_jid()
-    job_dict = instantiate_job(jid, route, "submitted")
-    save_job(jid, job_dict)
-    queue_job(jid)
-    
-    return jid
-
-def update_job_status(jid, status):
-    """
-    Update the status of job with job id `jid` to status `status`.
-    """
-
-    job = json.loads(rd.get(jid))
-    if job:
-        job['status'] = status
-        save_job(generate_job_key(jid), job)
-    else:
-        raise Exception()
-
-def list_of_jobs():
-    """
-    This function creates a list of jobs that is in an easily returnable state.
-    
-    Returns:
-        jobsList (list): The list of current jobs queued by the user.
-    """
-    jobsList = []
-    for key in rd.keys():
-        jobsList.append(json.loads(rd.get(key.decode('utf-8'))))
-        
-    return jobsList
-        
-# JOB RELATED
-
-def get_data() -> dict:
-    """
-    This function returns the data from Redis, but only if it exists or is empty.
-    Otherwise it will return a message saying that the data does not exist.
+    Args:
+        xml_file (str, optional): The path to the XML file. Defaults to 'SITE_HCC_FCT_DET.xml'.
 
     Returns:
-        redisData (dict): The entire health care center data.
+        data (dict): The healthcare center data.
     """
+    data = parse_xml_data(xml_file)
 
-    #try-except block that returns if the data doesn't exist and an error occurs because of it
+    # Store the data in Redis
     try:
-        #un-seralizing the string into a dictionary
-        redisData = json.loads(rd2.get('data'))
-    except NameError:
-        return 'The data does not exist.'
-    except TypeError:
-        return 'The data does not exist.'
+        rd.set('healthcare_data', json.dumps(data))
+    except Exception as e:
+        print(f"Error storing data in Redis: {e}")
 
-    return redisData
+    return data
 
+def compute_average_hours(data: dict) -> float:
+    """
+    Compute the average operating hours per week for all healthcare centers.
 
-def get_sites_by_state(full_data_json:dict, state:str) -> list:
-    '''
-        This function gets a list of all the sites in a state.
+    Args:
+        data (dict): The healthcare center data.
 
-        Args:
-            full_data_json (dict) : The full data json from the database
-            state (str) : The name of the desired state
-        Returns:
-            sites (list) : A list of strings of sites
-    '''
+    Returns:
+        average_hours (float): The average operating hours per week.
+    """
+    total_hours = 0
+    num_centers = len(data['sites'])
 
-    sites = []
-    for item in full_data_json['']:
-        if item['Site State Abbreviation'] == state:
-            sites.append(item['Site Name'][:item['Site Name'].index(" |")])
+    for site in data['sites']:
+        hours = site.get('Operating Hours per Week', 0)  # Get the operating hours for each site
+        total_hours += float(hours)
 
-    return(sites)
+    if num_centers > 0:
+        average_hours = total_hours / num_centers
+    else:
+        average_hours = 0
 
+    return average_hours
 
+def site_count_by_state(data: dict) -> dict:
+    """
+    Count the number of healthcare centers in each state.
 
+    Args:
+        data (dict): The healthcare center data.
 
+    Returns:
+        state_counts (dict): A dictionary containing the count of centers in each state.
+    """
+    state_counts = {}
 
+    for site in data['sites']:
+        state = site.get('Site State Abbreviation')
+        if state:
+            state_counts[state] = state_counts.get(state, 0) + 1
 
+    return state_counts
