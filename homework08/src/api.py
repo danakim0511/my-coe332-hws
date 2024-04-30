@@ -1,8 +1,6 @@
 # api.py
 
-from flask import Flask, request, send_file, jsonify
-import requests
-import json
+from flask import Flask, jsonify
 import os
 from redis import Redis
 from hotqueue import HotQueue
@@ -20,35 +18,15 @@ app = Flask(__name__)
 
 @app.route('/data', methods=['DELETE'])
 def delete_data() -> str:
-    """
-    This function deletes the data completely.
-
-    Returns:
-        message (str): Message saying that the data was deleted.
-    """
-
     rd2.delete('data')
-
     message = 'Successfully deleted all the data from the dictionary!\n'
     return message
 
 @app.route('/data', methods=['POST'])
 def post_data() -> str:
-    """
-    This function adds the DATA dictionary object with the data from the web and returns
-    a success message.
-
-    Returns:
-        message (str): Message saying that the data was successfully reloaded.
-    """
-
-    # Assuming you have logic here to fetch and process XML data into dictionary format
     data = {}  # Your processed XML data
-
     rd2.set('data', json.dumps(data))
-
     message = 'Successfully loaded in the dictionary.\n'
-
     return message
 
 @app.route('/jobs', methods=['GET'])
@@ -58,7 +36,7 @@ def get_list_of_jobs():
 
 @app.route('/jobs/<string:route>', methods=['POST'])
 def post_job(route: str) -> dict:
-    jid = add_job(q, route)
+    jid = add_job(q, route)  # Pass 'q' as an argument
     return f'Successfully queued a job! \nTo view the status of the job, curl /jobs.\nHere is the job ID: {jid}\n'
 
 @app.route('/jobs/<string:jid>', methods=['GET'])
