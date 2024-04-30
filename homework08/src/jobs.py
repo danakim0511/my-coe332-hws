@@ -1,7 +1,8 @@
 # jobs.py
-import xml.etree.ElementTree as ET
+
 import os
 import json
+import uuid  # Add this import for generating UUIDs
 
 from redis import Redis
 
@@ -12,51 +13,24 @@ if not redis_ip:
 rd = Redis(host=redis_ip, port=6379, db=0)
 rd2 = Redis(host=redis_ip, port=6379, db=2)
 
-def parse_xml_data(xml_file: str) -> dict:
-    """
-    Parse the healthcare center data from the given XML file.
-
-    Args:
-        xml_file (str): The path to the XML file.
-
-    Returns:
-        data (dict): The parsed healthcare center data.
-    """
-    data = {'sites': []}
-
-    try:
-        tree = ET.parse(xml_file)
-        root = tree.getroot()
-
-        for site in root.findall('.//row'):  # Assuming each site is represented as a 'row' element
-            site_data = {}
-            for field in site.findall('*'):
-                site_data[field.tag] = field.text
-            data['sites'].append(site_data)
-    except Exception as e:
-        print(f"Error parsing XML data: {e}")
-
-    return data
-
 def _generate_jid():
     """
     Generate a pseudo-random identifier for a job.
     """
     return str(uuid.uuid4())
 
-def _instantiate_job(jid, status, start, end):
+def _instantiate_job(jid, status, route):
     """
     Create the job object description as a python dictionary. Requires the job id,
-    status, start and end parameters.
+    status, and route parameters.
     """
     return {'id': jid,
             'status': status,
-            'gene_id': start,   # change start and end
-            'gene_status': end }
+            'route': route}
 
 def _save_job(jid, job_dict):
     """Save a job object in the Redis database."""
-    jdb.set(jid, json.dumps(job_dict))
+    rd2.set(jid, json.dumps(job_dict))
     return
 
 def _queue_job(jid):
@@ -64,10 +38,10 @@ def _queue_job(jid):
     q.put(jid)
     return
 
-def add_job(start, end, status="submitted"):
+def add_job(route, status="submitted"):
     """Add a job to the redis queue."""
     jid = _generate_jid()
-    job_dict = _instantiate_job(jid, status, start, end)
+    job_dict = _instantiate_job(jid, status, route)
     _save_job(jid, job_dict)
     _queue_job(jid)
     return job_dict
