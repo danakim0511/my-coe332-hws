@@ -30,6 +30,17 @@ def post_data() -> str:
     message = 'Successfully loaded in the dictionary.\n'
     return message
 
+def list_of_jobs():
+    """
+    Retrieve a list of all job IDs.
+
+    Returns:
+        list: A list of job IDs.
+    """
+    # Fetch all keys from the Redis database (assuming job IDs are used as keys)
+    job_ids = rd2.keys()
+    return job_ids
+
 @app.route('/jobs', methods=['GET'])
 def get_list_of_jobs():
     jobsList = list_of_jobs()
