@@ -44,6 +44,8 @@ def list_of_jobs():
 @app.route('/jobs', methods=['GET'])
 def get_list_of_jobs():
     jobsList = list_of_jobs()
+    # Convert bytes objects to strings before jsonify
+    jobsList = [job.decode('utf-8') if isinstance(job, bytes) else job for job in jobsList]
     return jsonify(jobsList)
 
 @app.route('/jobs/<string:route>', methods=['POST'])
