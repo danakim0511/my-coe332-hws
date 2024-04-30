@@ -58,7 +58,7 @@ def get_list_of_jobs():
 
 @app.route('/jobs/<string:route>', methods=['POST'])
 def post_job(route: str) -> dict:
-    jid = add_job(route)
+    jid = add_job(q, route)
     return f'Successfully queued a job! \nTo view the status of the job, curl /jobs.\nHere is the job ID: {jid}\n'
 
 @app.route('/jobs/<string:jid>', methods=['GET'])
