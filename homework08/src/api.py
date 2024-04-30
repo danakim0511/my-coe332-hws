@@ -4,6 +4,7 @@ from flask import Flask, jsonify
 import os
 from redis import Redis
 from hotqueue import HotQueue
+import json
 from jobs import add_job
 
 redis_ip = os.environ.get('REDIS_IP')
