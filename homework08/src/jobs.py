@@ -3,6 +3,8 @@
 import os
 import json
 import uuid  # Add this import for generating UUIDs
+from hotqueue import HotQueue
+
 
 from redis import Redis
 
