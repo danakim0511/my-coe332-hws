@@ -33,7 +33,7 @@ def _save_job(jid, job_dict):
     rd2.set(jid, json.dumps(job_dict))
     return
 
-def _queue_job(jid):
+def _queue_job(q, jid):
     """Add a job to the redis queue."""
     q.put(jid)
     return
