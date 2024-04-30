@@ -43,7 +43,7 @@ def add_job(route, status="submitted"):
     jid = _generate_jid()
     job_dict = _instantiate_job(jid, status, route)
     _save_job(jid, job_dict)
-    _queue_job(jid)
+    _queue_job(q, jid)  # Pass 'q' as an argument
     return job_dict
 
 def get_job_by_id(jid):
