@@ -11,6 +11,7 @@ if not redis_ip:
     raise Exception()
 
 rd = Redis(host=redis_ip, port=6379, db=0)
+q = HotQueue("queue", host=redis_ip, port=6379, db=1)
 rd2 = Redis(host=redis_ip, port=6379, db=2)
 
 def _generate_jid():
@@ -38,7 +39,7 @@ def _queue_job(q, jid):
     q.put(jid)
     return
 
-def add_job(route, status="submitted"):
+def add_job(q, route, status="submitted"):
     """Add a job to the redis queue."""
     jid = _generate_jid()
     job_dict = _instantiate_job(jid, status, route)
