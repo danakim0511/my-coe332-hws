@@ -29,7 +29,7 @@ def delete_data() -> str:
 def post_data() -> str:
     csv_file_path = '../data/SITE_HCC_FCT_DET.csv'  # Update the file path
     data = parse_csv_data(csv_file_path)
-    print("Parsed data:", data)  # Add this line to check parsed data
+    print(data)  # Add this line to check parsed data
     try:
         rd2.set('healthcare_data', json.dumps(data))
         print("Data stored in Redis successfully.")
