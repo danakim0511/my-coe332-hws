@@ -72,7 +72,7 @@ def get_job(jid: str) -> dict:
 @app.route('/sites', methods=['GET'])
 def get_site_names():
     data = get_data()  # Assuming get_data returns data with site names
-    site_names = [site['name'] for site in data['sites']]
+    site_names = [site['name'] for site in data['Site Name']]
     return jsonify(site_names)
 
 @app.route('/jobs/clear', methods=['DELETE'])
