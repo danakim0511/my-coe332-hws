@@ -5,6 +5,7 @@ import json
 import uuid  # Add this import for generating UUIDs
 from hotqueue import HotQueue
 import xml.etree.ElementTree as ET
+from pprint import pprint
 
 from redis import Redis
 
@@ -45,6 +46,12 @@ def parse_xml_data(xml_file: str) -> dict:
         print(f"Error parsing XML data: {e}")
 
     return data
+
+sample_xml_file = 'data/SITE_HCC_FCT_DET.xml'  # Replace with the path to your XML file
+parsed_data = parse_xml_data(sample_xml_file)
+
+# Print the parsed data
+pprint(parsed_data)
 
 def _generate_jid():
     """
