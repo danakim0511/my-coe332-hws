@@ -6,6 +6,7 @@ from redis import Redis
 from hotqueue import HotQueue
 import json
 from jobs import add_job
+from jobs import parse_xml_data
 from jobs import get_data
 
 redis_ip = os.environ.get('REDIS_IP')
@@ -26,8 +27,10 @@ def delete_data() -> str:
 
 @app.route('/data', methods=['POST'])
 def post_data() -> str:
-    data = get_data()  # Call get_data() to retrieve the healthcare center data
-    rd.set('healthcare_data', json.dumps(data))  # Store the data in Redis
+    data = {}  # Your processed XML data
+    xml_file_path = 'data/SITE_HCC_FCT_DET.xml'  # Update the file path
+    data = parse_xml_data(xml_file_path)
+    rd2.set('healthcare_data', json.dumps(data))
     message = 'Successfully loaded in the dictionary.\n'
     return message
 
