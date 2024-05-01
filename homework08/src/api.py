@@ -27,7 +27,7 @@ def delete_data() -> str:
 
 @app.route('/data', methods=['POST'])
 def post_data() -> str:
-    csv_file_path = 'data/SITE_HCC_FCT_DET.csv'  # Update the file path
+    csv_file_path = '../data/SITE_HCC_FCT_DET.csv'  # Update the file path
     data = parse_csv_data(csv_file_path)
     rd2.set('healthcare_data', json.dumps(data))
     message = 'Successfully loaded in the dictionary.\n'
@@ -68,11 +68,16 @@ def get_job(jid: str) -> dict:
         except json.JSONDecodeError as e:
             return jsonify({'error': 'Failed to decode job results: {}'.format(str(e))}), 500
 
-# Route to display all site names
+# Get list of site names
 @app.route('/sites', methods=['GET'])
 def get_site_names():
-    data = get_data()  # Assuming get_data returns data with site names
-    site_names = [site['name'] for site in data['Site Name']]
+    # Retrieve data from Redis
+    data_json = rd2.get('healthcare_data')
+    if not data_json:
+        return jsonify({'error': 'Healthcare data not found. Please load data first using /data endpoint.'}), 404
+    
+    data = json.loads(data_json)
+    site_names = [site['Site Name'] for site in data]
     return jsonify(site_names)
 
 @app.route('/jobs/clear', methods=['DELETE'])
