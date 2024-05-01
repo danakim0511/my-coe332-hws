@@ -40,7 +40,7 @@ def parse_csv_data(csv_file: str) -> list:
     return data
 
 # Test the function with a sample CSV file
-sample_csv_file = 'path/to/your/sample.csv'  # Replace with the path to your CSV file
+sample_csv_file = 'data/SITE_HCC_FCT_DET.csv'  # Replace with the path to your CSV file
 parsed_data = parse_csv_data(sample_csv_file)
 
 # Print the parsed data
