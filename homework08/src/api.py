@@ -26,8 +26,8 @@ def delete_data() -> str:
 
 @app.route('/data', methods=['POST'])
 def post_data() -> str:
-    data = {}  # Your processed XML data
-    rd2.set('data', json.dumps(data))
+    data = get_data()  # Call get_data() to retrieve the healthcare center data
+    rd.set('healthcare_data', json.dumps(data))  # Store the data in Redis
     message = 'Successfully loaded in the dictionary.\n'
     return message
 
