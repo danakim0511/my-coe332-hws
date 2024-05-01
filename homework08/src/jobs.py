@@ -34,7 +34,7 @@ def parse_xml_data(xml_file: str) -> dict:
 
         for site in root.findall('site'):
             site_data = {}
-            site_data['name'] = site.find('name').text
+            site_data['name'] = site.find('Site Name').text
             # Add more fields as needed
             data['sites'].append(site_data)
     except Exception as e:
