@@ -5,7 +5,7 @@ import os
 from redis import Redis
 from hotqueue import HotQueue
 import json
-from jobs import add_job
+from jobs import *
 
 redis_ip = os.environ.get('REDIS_IP')
 if not redis_ip:
