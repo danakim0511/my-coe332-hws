@@ -32,9 +32,13 @@ def parse_xml_data(xml_file: str) -> dict:
         tree = ET.parse(xml_file)
         root = tree.getroot()
 
-        for site in root.findall('site'):
+        # Iterate over each site in the XML data
+        for site in root.findall('row'):
             site_data = {}
+            # Extract relevant attributes for each site
             site_data['name'] = site.find('Site Name').text
+            site_data['uds_number'] = site.find('UDS Number').text
+            site_data['telephone_number'] = site.find('Site Telephone Number').text
             # Add more fields as needed
             data['sites'].append(site_data)
     except Exception as e:
