@@ -27,7 +27,6 @@ def delete_data() -> str:
 
 @app.route('/data', methods=['POST'])
 def post_data() -> str:
-    data = {}  # Your processed XML data
     csv_file_path = 'data/SITE_HCC_FCT_DET.csv'  # Update the file path
     data = parse_csv_data(csv_file_path)
     rd2.set('healthcare_data', json.dumps(data))

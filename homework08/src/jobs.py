@@ -93,7 +93,7 @@ def update_job_status(jid, status):
     else:
         raise Exception()
 
-def get_data(csv_file: str = 'SITE_HCC_FCT_DET.csv') -> dict:
+def get_data(csv_file: str = 'data/SITE_HCC_FCT_DET.csv') -> dict:
     """
     Retrieve the healthcare center data from the csv file and return as a dictionary.
 
