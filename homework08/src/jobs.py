@@ -36,6 +36,10 @@ def parse_csv_data(csv_file: str) -> list:
                 data.append(row)
     except Exception as e:
         print(f"Error parsing CSV data: {e}")
+    else:
+        print("CSV data parsed successfully:")
+        for row in data:
+            print(row)
 
     return data
 
@@ -82,7 +86,7 @@ def add_job(q, route, status="submitted"):
 
 def get_job_by_id(jid):
     """Return job dictionary given jid"""
-    return json.loads(jdb.get(jid))
+    return json.loads(rd2.get(jid))
 
 def update_job_status(jid, status):
     """Update the status of job with job id `jid` to status `status`."""
