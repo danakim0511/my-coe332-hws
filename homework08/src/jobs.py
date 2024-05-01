@@ -37,6 +37,7 @@ def parse_xml_data(xml_file: str) -> dict:
             site_data = {}
             # Extract relevant attributes for each site
             site_data['name'] = site.find('Site Name').text
+            print("Site Name:", site_data['name'])  # Debug print statement
             site_data['uds_number'] = site.find('UDS Number').text
             site_data['telephone_number'] = site.find('Site Telephone Number').text
             # Add more fields as needed
