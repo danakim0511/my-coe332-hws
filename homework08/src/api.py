@@ -65,6 +65,13 @@ def get_job(jid: str) -> dict:
         except json.JSONDecodeError as e:
             return jsonify({'error': 'Failed to decode job results: {}'.format(str(e))}), 500
 
+# Route to display all site names
+@app.route('/sites', methods=['GET'])
+def get_site_names():
+    data = get_data()  # Assuming get_data returns data with site names
+    site_names = [site['name'] for site in data['sites']]
+    return jsonify(site_names)
+
 @app.route('/jobs/clear', methods=['DELETE'])
 def clear_jobs() -> str:
     rd.flushdb()
