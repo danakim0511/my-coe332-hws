@@ -4,7 +4,7 @@ import os
 import json
 import uuid  # Add this import for generating UUIDs
 from hotqueue import HotQueue
-import xml.etree.ElementTree as ET
+import csv
 from pprint import pprint
 
 from redis import Redis
@@ -17,43 +17,36 @@ rd = Redis(host=redis_ip, port=6379, db=0)
 q = HotQueue("queue", host=redis_ip, port=6379, db=1)
 rd2 = Redis(host=redis_ip, port=6379, db=2)
 
-def parse_xml_data(xml_file: str) -> dict:
+def parse_csv_data(csv_file: str) -> list:
     """
-    Parse the XML file containing healthcare center data and return as a dictionary.
+    Parse the CSV file containing healthcare center data and return as a list of dictionaries.
 
     Args:
-        xml_file (str): The path to the XML file.
+        csv_file (str): The path to the CSV file.
 
     Returns:
-        data (dict): The healthcare center data.
+        data (list): A list of dictionaries representing each row of data.
     """
-    data = {'sites': []}
+    data = []
 
     try:
-        tree = ET.parse(xml_file)
-        root = tree.getroot()
-
-        # Iterate over each site in the XML data
-        for site in root.findall('row'):
-            site_data = {}
-            # Extract relevant attributes for each site
-            site_data['name'] = site.find('Site Name').text
-            print("Site Name:", site_data['name'])  # Debug print statement
-            site_data['uds_number'] = site.find('UDS Number').text
-            site_data['telephone_number'] = site.find('Site Telephone Number').text
-            # Add more fields as needed
-            data['sites'].append(site_data)
+        with open(csv_file, 'r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                data.append(row)
     except Exception as e:
-        print(f"Error parsing XML data: {e}")
+        print(f"Error parsing CSV data: {e}")
 
     return data
 
-sample_xml_file = 'data/SITE_HCC_FCT_DET.xml'  # Replace with the path to your XML file
-parsed_data = parse_xml_data(sample_xml_file)
+# Test the function with a sample CSV file
+sample_csv_file = 'path/to/your/sample.csv'  # Replace with the path to your CSV file
+parsed_data = parse_csv_data(sample_csv_file)
 
 # Print the parsed data
-pprint(parsed_data)
-
+for row in parsed_data:
+    print(row)
+    
 def _generate_jid():
     """
     Generate a pseudo-random identifier for a job.
@@ -100,17 +93,17 @@ def update_job_status(jid, status):
     else:
         raise Exception()
 
-def get_data(xml_file: str = 'SITE_HCC_FCT_DET.xml') -> dict:
+def get_data(csv_file: str = 'SITE_HCC_FCT_DET.csv') -> dict:
     """
-    Retrieve the healthcare center data from the XML file and return as a dictionary.
+    Retrieve the healthcare center data from the csv file and return as a dictionary.
 
     Args:
-        xml_file (str, optional): The path to the XML file. Defaults to 'SITE_HCC_FCT_DET.xml'.
+        csv_file (str, optional): The path to the XML file. Defaults to 'SITE_HCC_FCT_DET.xml'.
 
     Returns:
         data (dict): The healthcare center data.
     """
-    data = parse_xml_data(xml_file)
+    data = parse_csv_data(csv_file)
 
     # Store the data in Redis
     try:
