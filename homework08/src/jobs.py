@@ -4,7 +4,7 @@ import os
 import json
 import uuid  # Add this import for generating UUIDs
 from hotqueue import HotQueue
-
+import xml.etree.ElementTree as ET
 
 from redis import Redis
 
@@ -15,6 +15,32 @@ if not redis_ip:
 rd = Redis(host=redis_ip, port=6379, db=0)
 q = HotQueue("queue", host=redis_ip, port=6379, db=1)
 rd2 = Redis(host=redis_ip, port=6379, db=2)
+
+def parse_xml_data(xml_file: str) -> dict:
+    """
+    Parse the XML file containing healthcare center data and return as a dictionary.
+
+    Args:
+        xml_file (str): The path to the XML file.
+
+    Returns:
+        data (dict): The healthcare center data.
+    """
+    data = {'sites': []}
+
+    try:
+        tree = ET.parse(xml_file)
+        root = tree.getroot()
+
+        for site in root.findall('site'):
+            site_data = {}
+            site_data['name'] = site.find('name').text
+            # Add more fields as needed
+            data['sites'].append(site_data)
+    except Exception as e:
+        print(f"Error parsing XML data: {e}")
+
+    return data
 
 def _generate_jid():
     """
