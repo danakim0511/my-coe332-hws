@@ -12,7 +12,7 @@ from jobs import get_data
 redis_ip = os.environ.get('REDIS_IP')
 print("REDIS_IP:", redis_ip)
 if not redis_ip:
-    raise Exception()
+    raise Exception("REDIS_IP environment variable not found")
 
 rd = Redis(host=redis_ip, port=6379, db=0)
 q = HotQueue('queue', host=redis_ip, port=6379, db=1)
