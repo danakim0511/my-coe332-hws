@@ -32,12 +32,9 @@ def post_data() -> str:
     print(data)  # Add this line to check parsed data
     try:
         rd2.set('healthcare_data', json.dumps(data))
-        print("Data stored in Redis successfully.")
+        return "Data stored in Redis successfully."
     except Exception as e:
-        print("Error storing data in Redis:", e)
-    message = 'Successfully loaded in the dictionary.\n'
-    return message
-
+        return "Error storing data in Redis:" + str(e)
 
 def list_of_jobs():
     """
