@@ -9,15 +9,13 @@ from jobs import add_job
 from jobs import parse_csv_data
 from jobs import get_data
 
-redis_ip = os.environ.get('REDIS_IP')
-print("REDIS_IP:", redis_ip)
-if not redis_ip:
-    raise Exception("REDIS_IP environment variable not found")
+# Get the Redis service hostname from the environment
+redis_host = os.environ.get('REDIS_HOST', 'redis')
 
-rd = Redis(host=redis_ip, port=6379, db=0)
-q = HotQueue('queue', host=redis_ip, port=6379, db=1)
-rd2 = Redis(host=redis_ip, port=6379, db=2)
-
+# Define the Redis connection
+rd = Redis(host=redis_host, port=6379, db=0)
+q = HotQueue('queue', host=redis_host, port=6379, db=1)
+rd2 = Redis(host=redis_host, port=6379, db=2)
 app = Flask(__name__)
 
 @app.route('/data', methods=['DELETE'])
