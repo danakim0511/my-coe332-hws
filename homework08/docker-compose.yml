@@ -6,7 +6,7 @@ services:
         ports:
             - 6379:6379
         volumes:
-            - ./data:/data
+            - ./data:/app/data   # Mount the data directory to /app/data inside the container
         command: ["--save", "1", "1"]
 
     flask-api:
@@ -19,8 +19,9 @@ services:
         depends_on:
             - redis-db
         environment:
-            - REDIS_IP=redis-db
-        command: ["python", "api.py"]  # Updated command to use "python" instead of "python3"
+            - REDIS_HOST=redis-db   # Update the environment variable name
+        volumes:
+            - ./data:/app/data   # Mount the data directory to /app/data inside the container
 
     worker:
         build:
@@ -30,5 +31,6 @@ services:
         depends_on:
             - redis-db
         environment:
-            - REDIS_IP=redis-db
-        command: ["python", "worker.py"]  # Updated command to use "python" instead of "python3"
+            - REDIS_IP=redis-db   # Update the environment variable name
+        volumes:
+            - ./data:/app/data   # Mount the data directory to /app/data inside the container
