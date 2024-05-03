@@ -2,7 +2,7 @@
 
 from hotqueue import HotQueue
 from redis import Redis
-from jobs import *
+from jobs import update_job_status, get_data, compute_average_hours, site_count_by_state
 import json
 import os
 
