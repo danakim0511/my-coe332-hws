@@ -46,16 +46,16 @@ def parse_csv_data(csv_file: str) -> list:
         print(f"Error parsing CSV data: {e}")
     else:
         print("CSV data parsed successfully:")
-        for row in data:
-            print(row)
+        #for row in data:
+        #    print(row)
 
     return data
 
 parsed_data = parse_csv_data(csv_file_path)
 
 # Print the parsed data
-for row in parsed_data:
-    print(row)
+#for row in parsed_data:
+#    print(row)
     
 def _generate_jid():
     """
