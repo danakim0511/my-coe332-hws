@@ -24,6 +24,7 @@ services:
             - REDIS_IP=redis-db
         volumes:
             - ./data:/app/data  # Mount data directory for Flask app
+
         command: ["python", "api.py"]  # Ensure this command is correct
         networks:
             - homework08_network
@@ -37,6 +38,8 @@ services:
             - redis-db
         volumes:
             - ./data:/app/data  # Mount data directory for worker
+        environment:  # Manually set REDIS_IP here
+            - REDIS_IP=redis-db
         command: ["python", "worker.py"]  # Ensure this command is correct
         networks:
             - homework08_network
