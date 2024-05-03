@@ -4,11 +4,14 @@ from hotqueue import HotQueue
 from redis import Redis
 from jobs import *
 import json
+import os
 
+# Get the Redis service hostname from the environment
 redis_ip = os.environ.get('REDIS_IP')
 if not redis_ip:
     raise Exception()
 
+# Define the Redis connection
 rd = Redis(host=redis_ip, port=6379, db=0)
 q = HotQueue('queue', host=redis_ip, port=6379, db=1)
 rd2 = Redis(host=redis_ip, port=6379, db=2)
