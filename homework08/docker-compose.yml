@@ -5,12 +5,16 @@ services:
     image: redis:latest
     ports:
       - "6379:6379"
-  
-  web:
-    build: .
-    ports:
-      - "5000:5000"
-    depends_on:
-      - redis
-    environment:
-      - REDIS_IP=redis
+    volumes:
+      - ./data:/data
+    command: ["--save", "1", "1"]
+
+  worker:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        image: nicoleolv/fqhcs-app:1.0
+        depends_on:
+            - redis-db
+        command: ["python3", "worker.py"]
+
