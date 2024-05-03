@@ -51,7 +51,7 @@ def parse_csv_data(csv_file: str) -> list:
 
     return data
 
-parsed_data = parse_csv_data(csv_file)
+parsed_data = parse_csv_data(csv_file_path)
 
 # Print the parsed data
 for row in parsed_data:
