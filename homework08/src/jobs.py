@@ -45,8 +45,8 @@ def parse_csv_data(csv_file: str) -> list:
     return data
 
 # Test the function with a sample CSV file
-sample_csv_file = './data/SITE_HCC_FCT_DET.csv'  # Replace with the path to your CSV file
-parsed_data = parse_csv_data(sample_csv_file)
+csv_file = os.path.join(os.path.dirname(__file__), '..', 'data', 'SITE_HCC_FCT_DET.csv')
+parsed_data = parse_csv_data(csv_file)
 
 # Print the parsed data
 for row in parsed_data:
