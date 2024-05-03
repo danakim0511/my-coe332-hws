@@ -8,7 +8,9 @@ services:
         volumes:
             - ./data:/data
         command: ["--save", "1", "1"]
-
+        networks:
+            - homework08_network
+            
     flask-api:
         build:
             context: ./
@@ -23,6 +25,8 @@ services:
         volumes:
             - ./data:/app/data  # Mount data directory for Flask app
         command: ["python", "api.py"]  # Ensure this command is correct
+        networks:
+            - homework08_network
 
     worker:
         build:
@@ -34,3 +38,9 @@ services:
         volumes:
             - ./data:/app/data  # Mount data directory for worker
         command: ["python", "worker.py"]  # Ensure this command is correct
+        networks:
+            - homework08_network
+
+networks:
+    homework08_network:
+        driver: bridge
