@@ -45,7 +45,7 @@ def parse_csv_data(csv_file: str) -> list:
     return data
 
 # Test the function with a sample CSV file
-sample_csv_file = '../data/SITE_HCC_FCT_DET.csv'  # Replace with the path to your CSV file
+sample_csv_file = './data/SITE_HCC_FCT_DET.csv'  # Replace with the path to your CSV file
 parsed_data = parse_csv_data(sample_csv_file)
 
 # Print the parsed data
@@ -98,7 +98,7 @@ def update_job_status(jid, status):
     else:
         raise Exception()
 
-def get_data(csv_file: str = '../data/SITE_HCC_FCT_DET.csv') -> dict:
+def get_data(csv_file: str = './data/SITE_HCC_FCT_DET.csv') -> dict:
     """
     Retrieve the healthcare center data from the csv file and return as a dictionary.
 
