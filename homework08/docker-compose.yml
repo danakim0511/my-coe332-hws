@@ -6,7 +6,7 @@ services:
         ports:
             - 6379:6379
         volumes:
-            - ./data:/app/data   # Mount the data directory to /app/data inside the container
+            - ./data:/data
         command: ["--save", "1", "1"]
 
     flask-api:
@@ -19,9 +19,10 @@ services:
         depends_on:
             - redis-db
         environment:
-            - REDIS_HOST=redis-db   # Update the environment variable name
+            - REDIS_IP=redis-db
         volumes:
-            - ./data:/app/data   # Mount the data directory to /app/data inside the container
+            - ./data:/app/data
+        command: ["python", "api.py"]
 
     worker:
         build:
@@ -30,7 +31,6 @@ services:
         image: danakim/fqhcs-app:1.0
         depends_on:
             - redis-db
-        environment:
-            - REDIS_IP=redis-db   # Update the environment variable name
         volumes:
-            - ./data:/app/data   # Mount the data directory to /app/data inside the container
+            - ./data:/app/data
+        command: ["python", "worker.py"]
