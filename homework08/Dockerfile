@@ -17,4 +17,4 @@ COPY . .
 
 # Command to run the application
 
-CMD ["python", "src/api..py"]
+CMD ["python", "src/api.py"]
