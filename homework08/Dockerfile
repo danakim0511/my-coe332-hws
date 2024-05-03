@@ -1,7 +1,7 @@
 FROM python:3.9
 
 # Set working directory
-WORKDIR /app/src
+WORKDIR /app
 
 # Copy requirements file
 COPY requirements.txt .
@@ -13,7 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Give permissions to dump.rdb
-RUN chmod +r /app/data/dump.rdb
+# RUN chmod +r /app/data/dump.rdb
 
 # Command to run the application
-CMD ["python", "worker.py"]
+
+CMD ["python", "src/api..py"]
