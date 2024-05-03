@@ -18,6 +18,13 @@ rd = Redis(host=redis_ip, port=6379, db=0)
 q = HotQueue("queue", host=redis_ip, port=6379, db=1)
 rd2 = Redis(host=redis_ip, port=6379, db=2)
 
+# Define the path to the CSV file relative to the current working directory
+csv_file_path = os.path.join(os.getcwd(), 'data', 'SITE_HCC_FCT_DET.csv')
+
+# Ensure that the CSV file exists
+if not os.path.exists(csv_file_path):
+    raise FileNotFoundError(f"CSV file not found at: {csv_file_path}")
+
 def parse_csv_data(csv_file: str) -> list:
     """
     Parse the CSV file containing healthcare center data and return as a list of dictionaries.
@@ -44,8 +51,6 @@ def parse_csv_data(csv_file: str) -> list:
 
     return data
 
-# Test the function with a sample CSV file
-csv_file = os.path.join(os.path.dirname(__file__), '..', 'data', 'SITE_HCC_FCT_DET.csv')
 parsed_data = parse_csv_data(csv_file)
 
 # Print the parsed data
