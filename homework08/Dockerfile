@@ -16,4 +16,4 @@ COPY . .
 RUN chmod +r /app/data/dump.rdb
 
 # Command to run the application
-CMD ["python", "api.py"]
+CMD ["python", "worker.py"]
