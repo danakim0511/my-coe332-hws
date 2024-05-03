@@ -12,8 +12,8 @@ services:
     flask-api:
         build:
             context: ./
-            dockerfile: Dockerfile
-        image: danakim/fqhcs-app:1.0
+            dockerfile: Dockerfile  # Ensure that your Dockerfile is correctly configured
+        image: danakim/fqhcs-app:1.0  # Verify the image tag
         ports:
             - 5000:5000
         depends_on:
@@ -21,16 +21,16 @@ services:
         environment:
             - REDIS_IP=redis-db
         volumes:
-            - ./data:/app/data
-        command: ["python", "api.py"]
+            - ./data:/app/data  # Mount data directory for Flask app
+        command: ["python", "api.py"]  # Ensure this command is correct
 
     worker:
         build:
             context: ./
-            dockerfile: Dockerfile
-        image: danakim/fqhcs-app:1.0
+            dockerfile: Dockerfile  # Ensure that your Dockerfile is correctly configured
+        image: danakim/fqhcs-app:1.0  # Verify the image tag
         depends_on:
             - redis-db
         volumes:
-            - ./data:/app/data
-        command: ["python", "worker.py"]
+            - ./data:/app/data  # Mount data directory for worker
+        command: ["python", "worker.py"]  # Ensure this command is correct
