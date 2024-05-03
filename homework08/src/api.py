@@ -5,9 +5,7 @@ import os
 from redis import Redis
 from hotqueue import HotQueue
 import json
-from jobs import add_job
-from jobs import parse_csv_data
-from jobs import get_data
+from jobs import add_job, parse_csv_data, get_data
 
 # Get the Redis service hostname from the environment
 redis_host = os.environ.get('REDIS_HOST', 'redis')
@@ -18,6 +16,9 @@ q = HotQueue('queue', host=redis_host, port=6379, db=1)
 rd2 = Redis(host=redis_host, port=6379, db=2)
 app = Flask(__name__)
 
+# Define the path to the CSV file
+csv_file_path = './data/SITE_HCC_FCT_DET.csv'
+
 @app.route('/data', methods=['DELETE'])
 def delete_data() -> str:
     rd2.delete('data')
@@ -26,9 +27,7 @@ def delete_data() -> str:
 
 @app.route('/data', methods=['POST'])
 def post_data() -> str:
-    csv_file_path = './data/SITE_HCC_FCT_DET.csv'  # Update the file path
     data = parse_csv_data(csv_file_path)
-    #print(data)  # Add this line to check parsed data
     try:
         rd2.set('healthcare_data', json.dumps(data))
         return "Data stored in Redis successfully."
