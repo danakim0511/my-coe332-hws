@@ -12,8 +12,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code
 COPY . .
 
-# Give permissions to dump.rdb
-RUN chmod +r /app/data/dump.rdb
-
 # Command to run the application
 CMD ["python", "worker.py"]
